@@ -1,10 +1,10 @@
 import 'package:chatapp/helper/constants.dart';
-import 'package:chatapp/models/user.dart';
 import 'package:chatapp/services/database.dart';
-import 'package:chatapp/views/chat.dart';
 import 'package:chatapp/widget/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'chat_screen/ui/chat_screen.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -63,7 +63,7 @@ class _SearchState extends State<Search> {
     databaseMethods.addChatRoom(chatRoom, chatRoomId);
 
     Navigator.push(context, MaterialPageRoute(
-      builder: (context) => Chat(
+      builder: (context) => ChatScreen(
         chatRoomId: chatRoomId,
       )
     ));
@@ -81,14 +81,14 @@ class _SearchState extends State<Search> {
               Text(
                 userName,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16
                 ),
               ),
               Text(
                 userEmail,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16
                 ),
               )
@@ -107,7 +107,7 @@ class _SearchState extends State<Search> {
               ),
               child: Text("Message",
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16
                 ),),
             ),
@@ -152,38 +152,21 @@ class _SearchState extends State<Search> {
                   Expanded(
                     child: TextField(
                       controller: searchEditingController,
-                      style: simpleTextStyle(),
                       decoration: InputDecoration(
                         hintText: "search username ...",
                         hintStyle: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 16,
                         ),
                         border: InputBorder.none
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: (){
+                  IconButton(
+                    onPressed: (){
                       initiateSearch();
                     },
-                    child: Container(
-                      height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0x36FFFFFF),
-                              const Color(0x0FFFFFFF)
-                            ],
-                            begin: FractionalOffset.topLeft,
-                            end: FractionalOffset.bottomRight
-                          ),
-                          borderRadius: BorderRadius.circular(40)
-                        ),
-                        padding: EdgeInsets.all(12),
-                        child: Image.asset("assets/images/search_white.png",
-                          height: 25, width: 25,)),
+                    icon: Icon(Icons.search),
                   )
                 ],
               ),

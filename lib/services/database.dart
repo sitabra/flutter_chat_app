@@ -50,7 +50,7 @@ class DatabaseMethods {
         .document(chatRoomId)
         .collection("chats")
         .add(chatMessageData).catchError((e){
-          print(e.toString());
+      print(e.toString());
     });
   }
 

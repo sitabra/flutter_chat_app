@@ -1,19 +1,17 @@
-import 'package:chatapp/helper/authenticate.dart';
+import 'dart:developer';
 import 'package:chatapp/helper/constants.dart';
-import 'package:chatapp/helper/helperfunctions.dart';
-import 'package:chatapp/helper/theme.dart';
-import 'package:chatapp/screens/search.dart';
-import 'package:chatapp/services/auth.dart';
+import 'package:chatapp/helper/helper_functions.dart';
 import 'package:chatapp/services/database.dart';
+import 'package:chatapp/widget/custom_floating_button.dart';
 import 'package:flutter/material.dart';
-import '../../chat_screen/ui/chat.dart';
+import '../../chat_screen/ui/chat_screen.dart';
 
-class ChatRoom extends StatefulWidget {
+class ChatRoomScreen extends StatefulWidget {
   @override
-  _ChatRoomState createState() => _ChatRoomState();
+  _ChatRoomScreenState createState() => _ChatRoomScreenState();
 }
 
-class _ChatRoomState extends State<ChatRoom> {
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Stream chatRooms;
 
   Widget chatRoomsList() {
@@ -21,7 +19,7 @@ class _ChatRoomState extends State<ChatRoom> {
       stream: chatRooms,
       builder: (context, snapshot) {
         return snapshot.hasData
-            ? ListView.builder(
+            ? ListView.separated(
                 itemCount: snapshot.data.documents.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -32,7 +30,16 @@ class _ChatRoomState extends State<ChatRoom> {
                         .replaceAll(Constants.myName, ""),
                     chatRoomId: snapshot.data.documents[index].data["chatRoomId"],
                   );
-                })
+                }, separatorBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 50,right: 15),
+                    child: Divider(
+                      thickness: 1,
+                      indent: 10.0,
+                      color: Colors.black.withOpacity(0.2),
+                    ),
+                  );
+        },)
             : Container();
       },
     );
@@ -49,7 +56,7 @@ class _ChatRoomState extends State<ChatRoom> {
     DatabaseMethods().getUserChats(Constants.myName).then((snapshots) {
       setState(() {
         chatRooms = snapshots;
-        print(
+        log(
             "we got the data + ${chatRooms.toString()} this is name  ${Constants.myName}");
       });
     });
@@ -58,36 +65,28 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Image.asset(
-          "assets/images/logo.png",
-          height: 40,
+        title: Text("chatSPACE"),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Color.fromARGB(225,157,112,229),
+                  Colors.blue,
+                ],
+              )
+          ),
         ),
         elevation: 0.0,
-        centerTitle: false,
-        actions: [
-          GestureDetector(
-            onTap: () {
-              AuthService().signOut();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => Authenticate()));
-            },
-            child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(Icons.exit_to_app)),
-          )
-        ],
+        centerTitle: true,
       ),
       body: Container(
         child: chatRoomsList(),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Search()));
-        },
-      ),
+      floatingActionButton: CustomFloatingAddButton()
     );
   }
 }
@@ -103,42 +102,25 @@ class ChatRoomsTile extends StatelessWidget {
     return GestureDetector(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(
-          builder: (context) => Chat(
+          builder: (context) => ChatScreen(
+            userName: userName,
             chatRoomId: chatRoomId,
+
           )
         ));
       },
-      child: Container(
-        color: Colors.black26,
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Row(
-          children: [
-            Container(
-              height: 30,
-              width: 30,
-              decoration: BoxDecoration(
-                  color: CustomTheme.colorAccent,
-                  borderRadius: BorderRadius.circular(30)),
-              child: Text(userName.substring(0, 1),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'OverpassRegular',
-                      fontWeight: FontWeight.w300)),
+      child: ListTile(
+        leading: CircleAvatar(
+              child: Text(userName.substring(0, 1),style: TextStyle(fontSize: 25),),
             ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(userName,
+         title: Text(userName,
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16,
                     fontFamily: 'OverpassRegular',
                     fontWeight: FontWeight.w300))
-          ],
-        ),
+
       ),
     );
   }

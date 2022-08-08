@@ -34,12 +34,20 @@ dependencies:
   random_string: ^2.0.1
   cloud_firestore: ^0.13.5
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.2.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+flutter_native_splash:
+  color: "#5c8bff"
+  image: assets/images/splash1.png
+  android: true
+  ios: true
+
 
 # The following section is specific to Flutter.
 flutter:

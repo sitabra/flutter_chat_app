@@ -1,25 +1,21 @@
 import 'dart:developer';
 
-import 'package:chatapp/helper/helperfunctions.dart';
-import 'package:chatapp/helper/theme.dart';
+import 'package:chatapp/helper/helper_functions.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:chatapp/services/database.dart';
-import 'package:chatapp/widget/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../custom_bottom_navigation_screen/ui/custom_bottom_navigation_screen.dart';
 
-import 'chatrooms.dart';
-
-class SignUp extends StatefulWidget {
-  final Function toggleView;
-  SignUp(this.toggleView);
+class SignUpScreen extends StatefulWidget {
+  SignUpScreen();
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController phoneEditingController = new TextEditingController();
   TextEditingController otpController = new TextEditingController();
 
@@ -81,10 +77,10 @@ class _SignUpState extends State<SignUp> {
 
     HelperFunctions.saveUserLoggedInSharedPreference(true);
     HelperFunctions.saveUserNameSharedPreference(phoneEditingController.text);
-    HelperFunctions.saveUserEmailSharedPreference(phoneEditingController.text);
+    HelperFunctions.saveUserPhoneSharedPreference(phoneEditingController.text);
 
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => ChatRoom()));
+        context, MaterialPageRoute(builder: (context) => CustomBottomNavigationScreen()));
   }
 
   signUp() async {
@@ -128,160 +124,133 @@ class _SignUpState extends State<SignUp> {
             }
           });
         },
-        timeout: Duration(seconds: 10)
-    );
+        timeout: Duration(seconds: 10));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: appBarMain(context),
-        body: isLoading
-            ? Container(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            : Container(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: isOtpSent == false
-                    ? Column(
-                        children: [
-                          Spacer(),
-                          Form(
-                            key: formKey,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: phoneEditingController,
-                                  style: simpleTextStyle(),
-                                  validator: (val) {
-                                    return RegExp(
-                                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                            .hasMatch(val)
-                                        ? null
-                                        : "Enter correct email";
-                                  },
-                                  decoration: textFieldInputDecoration("email"),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              signUp();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      const Color(0xff007EF4),
-                                      const Color(0xff2A75BC)
-                                    ],
-                                  )),
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                "Sign Up",
-                                style: biggerTextStyle(),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.white),
-                            width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              "Sign Up with Google",
-                              style: TextStyle(
-                                  fontSize: 17, color: CustomTheme.textColor),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+    return Container(
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [Colors.blue, Color.fromARGB(225, 157, 112, 229)],
+      )),
+      child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: isLoading
+              ? Container(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    color: Colors.transparent,
+                    child: isOtpSent == false
+                        ? Column(
                             children: [
-                              Text(
-                                "Already have an account? ",
-                                style: simpleTextStyle(),
+                              Image.asset(
+                                "assets/images/icons.png",
+                                height: 350,
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  widget.toggleView();
-                                },
-                                child: Text(
-                                  "SignIn now",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      decoration: TextDecoration.underline),
-                                ),
+                              const Text("chatSPACE", style: TextStyle(fontSize: 40),
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 50,
-                          )
-                        ],
-                      )
-                    : Column(children: [
-                        Spacer(),
-                        Form(
-                          key: formKey2,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                controller: otpController,
-                                style: simpleTextStyle(),
-                                decoration:
-                                    textFieldInputDecoration("Enter OTP"),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  AuthCredential phoneAuthCredential =
-                                      PhoneAuthProvider.getCredential(
-                                          verificationId: vId,
-                                          smsCode: otpController.text);
-                                  signInWithPhoneAuthCredential(
-                                      phoneAuthCredential);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(30),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          const Color(0xff007EF4),
-                                          const Color(0xff2A75BC)
-                                        ],
-                                      )),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Text(
-                                    "Confirm",
-                                    style: biggerTextStyle(),
-                                    textAlign: TextAlign.center,
+                              Card(
+                                child: Column(
+                                  children: [
+                                Form(
+                                  key: formKey,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: TextField(
+                                      keyboardType: TextInputType.phone,
+                                      controller: phoneEditingController,
+                                      decoration: const InputDecoration(
+                                        prefixIcon: Icon(Icons.phone),
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Phone number',
+                                        hintText: 'Enter Your Phone number',
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          signUp();
+                                        },
+                                        child: const Text(
+                                          "LOG IN",
+                                          style: TextStyle(fontSize: 20),
+                                        )),
+                                  ),
+                                ),
+                                  ]
+                                ),
+                              )
                             ],
-                          ),
+                          )
+                        : Column(
+                      children: [
+                        Image.asset(
+                          "assets/images/icons.png",
+                          height: 350,
+                        ),
+                        const Text("chatSPACE", style: TextStyle(fontSize: 40),
+                        ),
+                        Card(
+                          child: Column(
+                              children: [
+                                Form(
+                                  key: formKey2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: TextField(
+                                      keyboardType: TextInputType.numberWithOptions(),
+                                      controller: otpController,
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'OTP',
+                                        hintText: 'Enter Your OTP')
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          AuthCredential phoneAuthCredential =
+                                          PhoneAuthProvider.getCredential(
+                                              verificationId: vId,
+                                              smsCode: otpController.text);
+                                          signInWithPhoneAuthCredential(
+                                              phoneAuthCredential);
+                                        },
+                                        child: const Text(
+                                          "Verify",
+                                          style: TextStyle(fontSize: 20),
+                                        )),
+                                  ),
+                                )]),
                         )
-                      ])));
+                      ],
+                    )),
+              )),
+    );
   }
 }

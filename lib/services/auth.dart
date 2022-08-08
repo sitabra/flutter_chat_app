@@ -1,14 +1,15 @@
 import 'package:chatapp/models/user.dart';
-import 'package:chatapp/views/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../screens/chat_screen/ui/chat_screen.dart';
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
+  UserModel _userFromFirebaseUser(FirebaseUser user) {
+    return user != null ? UserModel(uid: user.uid) : null;
   }
 
   Future signInWithEmailAndPassword(String email, String password) async {
@@ -23,17 +24,6 @@ class AuthService {
     }
   }
 
-  Future signUpWithEmailAndPassword(String email, String password) async {
-    try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      FirebaseUser user = result.user;
-      return _userFromFirebaseUser(user);
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
-  }
 
   Future resetPass(String email) async {
     try {
@@ -61,7 +51,7 @@ class AuthService {
 
     if (result == null) {
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Chat()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
     }
   }
 

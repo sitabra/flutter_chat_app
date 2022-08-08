@@ -1,6 +1,8 @@
-import 'package:chatapp/views/signin.dart';
-import 'package:chatapp/views/signup.dart';
+
 import 'package:flutter/material.dart';
+
+import '../screens/welcome_screen/ui/welcome_screen.dart';
+import '../screens/sign_up_screen/ui/signup.dart';
 
 class Authenticate extends StatefulWidget {
   @override
@@ -19,9 +21,10 @@ class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     if (showSignIn) {
-      return SignIn(toggleView);
+      return WelcomeScreen(toggleView);
     } else {
-      return SignUp(toggleView);
+      return SignUpScreen();
     }
   }
 }
+
